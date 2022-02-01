@@ -1,0 +1,28 @@
+version: '3.7'
+services:
+  api:
+    build: "../../apibackend/MultistageBuild/"
+    networks:
+      - "my-network"
+    depends_on:
+      - "db"
+  db:
+    build: "../../database/"
+    networks:
+      - "my-network"
+  rproxy:
+    build: "../../httpserver/reserveproxy/"
+    ports:
+      - "80:80"
+    networks:
+      - "my-network"
+    depends_on:
+      - "web"
+      - "api"
+  web:
+    build: "../../httpserver/apache/"
+    networks:
+      - "my-network"
+networks:
+  my-network:
+    name: networklucas
