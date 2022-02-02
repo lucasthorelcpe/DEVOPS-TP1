@@ -1,9 +1,9 @@
-name: CI devops 2022 CPE
+name: CI DevOps 2022 CPE
 on:
+#to begin you want to launch this job in main and develop
   push:
-    branches:
+    branches: 
       - main
-      - master
   pull_request:
 jobs:
   test-backend:
@@ -15,5 +15,7 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
           cache: 'maven'
+        #TODO
+    #finally build your app with the latest command
       - name: Build and test with Maven
-        run: mvn clean verify --file apibackend/MultistageBuild/simple-api/pom.xml
+        run: mvn clean verify --file apibackend/simple-api/pom.xml
