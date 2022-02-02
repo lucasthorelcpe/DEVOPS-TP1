@@ -16,7 +16,7 @@ jobs:
         java-version: '11'
         cache: 'maven'
     - name: Build and test with Maven
-      run: mvn clean verify --file ./apibackend/MultistageBuild/simple-api/pom.xml
+      run: mvn clean verify --file apibackend/MultistageBuild/simple-api/pom.xml
   build-and-push-docker-image:
     needs: test-backend
     runs-on: ubuntu-latest
