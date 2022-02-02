@@ -26,6 +26,5 @@ jobs:
       - name: Build image and push backend
         uses: docker/build-push-action@v2
         with:
-          context: ./apibackend/MultibuildStage/simple-api
+          context: ./apibackend/MultistageBuild/simple-api
           tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-cpe:backend
-
