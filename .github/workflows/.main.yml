@@ -18,4 +18,4 @@ jobs:
         #TODO
     #finally build your app with the latest command
       - name: Build and test with Maven
-        run: mvn clean verify --file apibackend/simple-api/pom.xml
+        run: mvn clean verify --file apibackend/MultistageBuild/simple-api/pom.xml
