@@ -16,7 +16,7 @@ jobs:
           cache: 'maven'
     #finally build your app with the latest command
       - name: Build and test with Maven
-        run: mvn clean verify sonar:sonar -Dsonar.projectKey=devops-2022 -Dsonar.organization=devops-cpe -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }} --file apibackend/MultistageBuild/simple-api/pom.xml
+        run: mvn clean verify sonar:sonar -Dsonar.projectKey=lucasthorelcpe_DEVOPS-TP1 -Dsonar.organization=lucasthorelcpe -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }} --file apibackend/MultistageBuild/simple-api/pom.xml
   build-and-push-docker-image:
     needs: test-backend
     # run only when code is compiling and tests are passing
