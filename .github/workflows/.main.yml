@@ -30,5 +30,6 @@ jobs:
           context: /apibackend/MultistageBuild/simple-api
           # Note: tags has to be all lower-case
           tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-cpe:simple-api
-
       - name: Build image and push database
+      - name: Build image and push httpd
+
