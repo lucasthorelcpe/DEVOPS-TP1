@@ -15,7 +15,6 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
           cache: 'maven'
-        #TODO
     #finally build your app with the latest command
       - name: Build and test with Maven
         run: mvn clean verify --file apibackend/MultistageBuild/simple-api/pom.xml
