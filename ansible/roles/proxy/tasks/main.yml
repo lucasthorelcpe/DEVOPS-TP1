@@ -3,7 +3,7 @@
 - name: launch proxy
   docker_container:
     name: proxy
-    image: lucasthorelcpe/tp-devops-cpe:rproxy
+    image: lucasthorelcpe/tp-devops-cpe:rproxy1
     networks:
       - name: "network_one"
     ports:

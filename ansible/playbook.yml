@@ -6,5 +6,5 @@
     - network
     - database
     - app
-    - proxy
     - web
+    - proxy
