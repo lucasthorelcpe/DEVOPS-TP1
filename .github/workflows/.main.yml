@@ -28,7 +28,4 @@ jobs:
         with:
           context: ./apibackend/MultibuildStage/simple-api
           tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-cpe:backend
-        # build on feature branches, push only on main branch
-      - name: Build image and push database
-      - name: Build image and push httpd
 
