@@ -1,0 +1,10 @@
+---
+# tasks file for roles/app
+- name: launch proxy
+  docker_container:
+    name: proxy
+    image: lucasthorelcpe/tp-devops-cpe:rproxy
+    networks:
+      - name: "network_one"
+    ports:
+    - "80:80"

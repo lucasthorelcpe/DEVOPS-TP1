@@ -1,0 +1,8 @@
+---
+# tasks file for roles/app
+- name: launch database
+  docker_container:
+    name: db
+    image: lucasthorelcpe/tp-devops-cpe:database
+    networks:
+      - name: "network_one"

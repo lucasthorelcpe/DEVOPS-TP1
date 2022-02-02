@@ -1,0 +1,8 @@
+---
+# tasks file for roles/app
+- name: launch web
+  docker_container:
+    name: web
+    image: lucasthorelcpe/tp-devops-cpe:web
+    networks:
+      - name: "network_one"

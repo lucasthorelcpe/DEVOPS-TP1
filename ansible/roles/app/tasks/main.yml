@@ -1,0 +1,8 @@
+---
+# tasks file for roles/app
+- name: launch app
+  docker_container:
+    name: api
+    image: lucasthorelcpe/tp-devops-cpe:backend
+    networks:
+      - name: "network_one"
