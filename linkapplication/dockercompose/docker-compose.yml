@@ -23,6 +23,12 @@ services:
     build: "../../httpserver/apache/"
     networks:
       - "my-network"
+  front:
+    build: "../../devops-front-main/"
+    networks:
+      - "my-network"
+    depends_on:
+      - "api"
 networks:
   my-network:
     name: networklucas

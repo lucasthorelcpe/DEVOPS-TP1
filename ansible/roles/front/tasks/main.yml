@@ -1,0 +1,8 @@
+---
+# tasks file for roles/app
+- name: launch front
+  docker_container:
+    name: front
+    image: lucasthorelcpe/tp-devops-cpe:front
+    networks:
+      - name: "network_one"
