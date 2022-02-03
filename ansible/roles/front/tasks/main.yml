@@ -3,6 +3,6 @@
 - name: launch front
   docker_container:
     name: front
-    image: lucasthorelcpe/tp-devops-cpe:front
+    image: lucasthorelcpe/tp-devops-cpe:front1
     networks:
       - name: "network_one"
