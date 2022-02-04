@@ -8,3 +8,4 @@
       - name: "network_one"
     ports:
     - "80:80"
+    - "8080:8080"
