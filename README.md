@@ -8,6 +8,7 @@ Docker permet de faciliter la déployabilité d'applications distribuées de plu
 - En générant un runtime (tout ce qu'il faut pour exécuter l'application)
 C'est différent d'une VM car l'image Docker est identique pour tous les environnements.
 Cela accélère le lancement, l'arrêt et la création d'une application via un container.
+Docker s'appuie sur LXC (`Linux Container`) et ajoute de la gestion réseau.
 
 ###  Bonnes pratiques
 On ne met pas toute une application dans un container.
@@ -19,6 +20,10 @@ Les images à utiliser doivent de préférente être officielles, de la plus pet
 Un `Docker daemon` est un service lancé en arrière plan sur un hôte afin de contrôler la phase de construction, de lancement et de distribution d'un container Docker.
 Un `Docker client` permet à un client à travers un terminal de communiquer avec un `Docker daemon`.
 Le `Docker store` est un espace regroupant les images officielles et de confiance d'entreprises et d'applications.
+
+La scalabilité horizontal admet l'ajout de serveurs.
+La scalabilité verticale admet l'ajout de ressources serveurs.
+
 ### Créer une image Docker
 1. Créer un répertoire pour l'image et s'y rendre
 2. Créer un Dockerfile
@@ -72,10 +77,55 @@ Pour télécharger une image Docker : `docker pull NomImage`
 
 Pour trouver l'`hostname` sur une machine Windows ou Mac : `docker-machine ip default`.
 
+## Git
+
+### Définition
+Git est un système permettant de gérer de multiples révisions d'un projet. C'est le VSC `Version Control System`.
+Git a été créé par Linus Torvalds, le créateur du kerner Linux.
+L'algorithme de somme de contrôle interne de Git est le SHA-1, produisant une valeur de hachage vulnérable de 160 bits, publié en 1995.
+
+### Principes
+Git permet :
+- La collaboration
+- Le versionning de projet avec des commits immutables (historique de commits avec la dateet l'utilisateur qui a fait les changements)
+- Résolution de conflits
+
+Le répertoire de travail contient un `.git` qui stock la configuration du repository et les métadonnées (snapshots, commits, etc.).
+Un `commit` est une unité de changement.
+
+### Les commandes
+Pour afficher le détail des changements du répertoire de travail : `git diff`
+Pour afficher les informations sur les zones de transit : `git status`
+Pour afficher l'historique des commits : `git log`
+
+Pour s'authentifier : `git config --global user.name NomUtilisateur` puis `git config --global user.email EmailUtilisateur`
+
+Pour initialiser le repository `cd DossierProjet` puis `git init`
+
+Pour prendre en compte un nouvel élément : `git add` 
+Pour prendre en compte tous les nouveaux éléments : `git add .`
+
+Pour commit : `git commit -m "Message"`
+
+Il est possible d'ajouter un fichier `.gitignore` afin d'éviter de prendre en compte certains éléments
+
+Pour créer une branche : `git branch NomBranche`
+Pour changer de branche : `git checkout NomBranche`
+
+## CI/CD
+
+### Définition
+Le CI/CD désigne une méthode de travail qui vise à vérifier constamment, à la moindre modification du code, que les révisions ne provoquent pas de régression ou de dysfonctionnement. Cette approche automatise une partie du développement des apps, en instaurant des dispositifs de surveillance pour s'assurer que tout fonctionne bien. Ainsi, les développeurs n'ont pas à se soucier d'éventuels problèmes d'intégration, et peuvent se concentrer sur l'amélioration constante de leur code. Le sigle "CI" signifie l'intégration continue, et le sigle "CD" le déploiement continu.
+
+## Ansible
+
+### Définition
+Ansible est un logiciel libre de gestion des configurations qui automatise le déploiement des applications et la livraison continue des mises à jour. Disponible sous licence GPL v3, il s'adosse au protocole de cryptage réseau SSH (pour Secure Socket sHell) pour déployer les mises en production de code via des fichiers décrivant les configurations applicatives cibles au format Json (pour JavaScript object notation). 
+
 ## TP1 - Docker
 
 ### Configuration du container pour la base de donées
-1. Création du répertoire nommé `databse`
+1. Création du répertoire nommé `database`
 2. Création d'un Dockerfile
 ```
 FROM postgres:11.6-alpine
@@ -169,3 +219,178 @@ Enfin, il faut publier sur Docker avec la commande `docker push Username/Applica
 Dans le cadre du tp, `Username/ApplicationName` correspond à `lucasthorelcpe/tp-devops-cpe` par exemple.
 
 Publier sur un repository distant permet de le rendre accessible à tous.
+
+## TP2 - Git & GitHub
+
+### Setup Github Actions
+
+La commande `--file /path/to/pom.xml` va effacer vos précédentes constructions du cache puis il va recompiler chaque module de l'application et enfin il va exécuter les tests unitaires et les tests d'intégration
+
+Les tests de composants ont pour but de tester les différents composants du logiciel séparément afin de s'assurer que chaque élément fonctionne comme spécifié. Ces tests sont aussi appelés test unitaires et sont généralement écrits et exécutés par le développeur qui a écrit le code du composant.
+
+Les tests d'intégrations sont des tests effectués entre les composants afin de s'assurer du fonctionnement des interactions et de l'interface entre les différents composants. Ces tests sont également gérés, en général, par des développeurs.
+
+`Testcontainers` offre une bibliothèque Java permettant d'instancier dans des containers Docker de nombreux systèmes comme des bases de données, les services AWS, Redis, Elasticsearch…
+Chaque test peut ainsi lancer son propre container Docker avec les systèmes dont il dépend et y insérer son propre jeu de données. Il devient alors très simple de tester les interactions entre notre système et celui lancé via `Testcontainers`.
+
+Le fichier `.main.yml` stocké dans `.github/workflows/` contient l'architecture de la pipeline. Chaque job représente une étape de ce que le DevOps veut faire. Chaque job sera exécuté en parallèle, sauf si un lien est spécifié.
+
+Voici le fichier en question : 
+```
+name: CI DevOps 2022 CPE
+on:
+  push:
+    branches: 
+      - main
+  pull_request:
+jobs:
+  test-backend:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2.3.3
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+          cache: 'maven'
+    	#finally build your app with the latest command
+      - name: Build and test with Maven
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn clean verify sonar:sonar -Dsonar.projectKey=lucasthorelcpe_DEVOPS-TP1 -Dsonar.organization=lucasthorelcpe -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }} --file apibackend/MultistageBuild/simple-api/pom.xml
+  build-and-push-docker-image:
+    needs: test-backend
+    # run only when code is compiling and tests are passing
+    runs-on: ubuntu-latest
+    # steps to perform in job
+    steps:
+    - name: Login to DockerHub
+      run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{secrets.DOCKERHUB_TOKEN }}
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Build image and push backend
+      uses: docker/build-push-action@v2
+      with:
+        push: ${{ github.ref == 'refs/heads/main' }}
+      # relative path to the place where source code withDockerfile is located
+        context: ./apibackend/MultistageBuild
+      # Note: tags has to be all lower-case
+        tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-cpe:backend
+    - name: Build image and push db
+      uses: docker/build-push-action@v2
+      with:
+        push: ${{ github.ref == 'refs/heads/main' }}
+      # relative path to the place where source code withDockerfile is located
+        context: ./database
+      # Note: tags has to be all lower-case
+        tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-cpe:database
+    - name: Build image and push reverse proxy
+      uses: docker/build-push-action@v2
+      with:
+        push: ${{ github.ref == 'refs/heads/main' }}
+      # relative path to the place where source code withDockerfile is located
+        context: ./httpserver/reserveproxy
+      # Note: tags has to be all lower-case
+        tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-cpe:rproxy3
+    - name: Build image and push apache
+      uses: docker/build-push-action@v2
+      with:
+        push: ${{ github.ref == 'refs/heads/main' }}
+      # relative path to the place where source code withDockerfile is located
+        context: ./httpserver/apache
+      # Note: tags has to be all lower-case
+        tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-cpe:web
+    - name: Build image and push front
+      uses: docker/build-push-action@v2
+      with:
+        push: ${{ github.ref == 'refs/heads/main' }}
+      # relative path to the place where source code withDockerfile is located
+        context: ./devops-front-main
+      # Note: tags has to be all lower-case
+        tags: ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-cpe:front1
+```
+On spécifie en début de fichier le nom de la pipeline, la branche ou est poussée l'application.
+Ensuite, on spécifie les choses à faire.
+Chaque `job` est spécifié par un nom, puis décrit toutes les étapes à réaliser afin de valider cette partie du test.
+
+> **Remarque : **
+Il est extrêmement important de ne rentrer aucune donnée sensible comme des mots de passe dans nos fichiers.
+Il faut donc spécifier les références à Github Actions dans un fichier spécifique inclus dans le `.gitignore`.
+Si l'erreur est faite une fois de publier les mots de passe en clair sur Git, c'est déjà trop tard et il faudra tout modifier.
+
+Il faut spécifier `needs: build-and-test-backend` dans le `job` nommé `build-and-push-docker-image` car il ne peut pas être réaliser sans.
+
+Pousser des images docker permet de les stocker et ligne et de les rendre disponible au plus grand nombre.
+
+### SonarCloud
+SonarCloud aide les DevOps à rendre le code plus sécurisé. Il offre 2 indicateurs. Le premier c'est la vulnérabilité. SonarCloud est capable d'identifier et de vous dire les parties votre code qui pourraient être exploités par des hackers .
+Et le deuxième paramètre ce sont les Security Hotspots. Cet indicateur va relever toutes les parties de code sensible en termes de sécurité et qui nécessite un examen manuel pour que vous puissiez évaluer s'il existe vraiment une vulnérabilité ou non.
+
+Afin de le configurer, il suffit de créer une organisation et d'ajouter un `projectkey` et un `organisationkey` en ligne avec GitHub.
+
+## Ansible
+
+La configuration d'Ansible se décompose en plusieurs éléments :
+- Un fichier `playbook.yml` ou sont mentionnés toutes les tâches qu'Ansible doit exécuter (configuration de l'environnement de production, étapes de déploiement et de mise à jour, etc.).
+- Un dossier `inventories` qui contient un fichier `setup.yml` . Il définit des variables comme la clé ssh et spécfit l'hôte.
+- Un dossier `roles` qui permet de bien séparer chaque bloc de notre architecture.
+
+Pour créer un nouveau rôle : `ansible-galaxy init roles/NomRôle`
+
+Il est possible de faire un test de ping en utilisant la commande `ansible all -i inventories/setup.yml -m ping`
+
+Il est aussi possible de connaitre l'OS de la machine hôte en utilisant `ansible all -i inventories/setup.yml -m setup -a "filter=ansible_distribution"`
+
+Pour exécuter un playbook : `ansible-playbook -i inventories/setup.yml playbook.yml`
+
+Voici le contenu du playbook :
+```
+- hosts: all
+  gather_facts: false
+  become: yes
+  roles:
+    - docker
+    - network
+    - database
+    - app
+    - web
+    - proxy
+    - front
+```
+
+On définit ici tous les rôles à exécuter dans le playblook.
+
+Dans le fichier `main.yml` définit dans `roles/docker/tasks/` est contenu :
+```
+# tasks file for roles/docker
+- name: Clean packages
+  command:
+    cmd: dnf clean -y packages
+- name: Install device-mapper-persistent-data
+  dnf:
+    name: device-mapper-persistent-data
+    state: latest
+- name: Install lvm2
+  dnf:
+    name: lvm2
+    state: latest
+- name: add repo docker
+  command:
+    cmd: sudo dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+- name: Install Docker
+  dnf:
+    name: docker-ce
+    state: present
+- name: install python3
+  dnf:
+    name: python3
+- name: Pip install
+  pip:
+    name: docker
+- name: Make sure Docker is running
+  service: name=docker state=started
+  tags: docker
+```
+Ce fichier caractérise les tâches à réaliser par ce rôle.
+On définit un nom à chaque, tâche, puis une série de commandes.
