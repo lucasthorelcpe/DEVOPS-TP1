@@ -329,7 +329,7 @@ Et le deuxième paramètre ce sont les Security Hotspots. Cet indicateur va rele
 
 Afin de le configurer, il suffit de créer une organisation et d'ajouter un `projectkey` et un `organisationkey` en ligne avec GitHub.
 
-## Ansible
+## TP3 - Ansible
 
 La configuration d'Ansible se décompose en plusieurs éléments :
 - Un fichier `playbook.yml` ou sont mentionnés toutes les tâches qu'Ansible doit exécuter (configuration de l'environnement de production, étapes de déploiement et de mise à jour, etc.).
